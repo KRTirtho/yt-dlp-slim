@@ -4,7 +4,6 @@ import re
 import urllib.parse
 
 from . import get_suitable_downloader
-from .external import FFmpegFD
 from .fragment import FragmentFD
 from .. import webvtt
 from ..dependencies import Cryptodome
@@ -80,7 +79,7 @@ class HlsFD(FragmentFD):
 
         can_download, message = self.can_download(s, info_dict, self.params.get('allow_unplayable_formats')), None
         if can_download:
-            has_ffmpeg = FFmpegFD.available()
+            has_ffmpeg = False
             no_crypto = not Cryptodome.AES and '#EXT-X-KEY:METHOD=AES-128' in s
             if no_crypto and has_ffmpeg:
                 can_download, message = False, 'The stream has AES-128 encryption and pycryptodomex is not available'
@@ -101,9 +100,10 @@ class HlsFD(FragmentFD):
                         'add --check-formats to automatically fallback to the next best format', tb=False)
                 return False
             message = message or 'Unsupported features have been detected'
-            fd = FFmpegFD(self.ydl, self.params)
-            self.report_warning(f'{message}; extraction will be delegated to {fd.get_basename()}')
-            return fd.real_download(filename, info_dict)
+            # fd = FFmpegFD(self.ydl, self.params)
+            self.report_warning(f'{message}; extraction will be delegated to NONE')
+            # return fd.real_download(filename, info_dict)
+            return
         elif message:
             self.report_warning(message)
 

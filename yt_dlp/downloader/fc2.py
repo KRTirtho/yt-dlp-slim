@@ -1,7 +1,6 @@
 import threading
 
 from .common import FileDownloader
-from .external import FFmpegFD
 
 
 class FC2LiveFD(FileDownloader):
@@ -40,7 +39,8 @@ class FC2LiveFD(FileDownloader):
             'protocol': 'live_ffmpeg',
         })
         try:
-            return FFmpegFD(self.ydl, self.params or {}).download(filename, new_info_dict)
+            pass
+            # return FFmpegFD(self.ydl, self.params or {}).download(filename, new_info_dict)
         finally:
             # stop heartbeating
             heartbeat_state[1] = -1

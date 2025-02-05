@@ -9,11 +9,9 @@ def get_suitable_downloader(info_dict, params={}, default=NO_DEFAULT, protocol=N
     protocols = (protocol or info_copy['protocol']).split('+')
     downloaders = [_get_suitable_downloader(info_copy, proto, params, default) for proto in protocols]
 
-    if set(downloaders) == {FFmpegFD} and FFmpegFD.can_merge_formats(info_copy, params):
-        return FFmpegFD
-    elif (set(downloaders) == {DashSegmentsFD}
-          and not (to_stdout and len(protocols) > 1)
-          and set(protocols) == {'http_dash_segments_generator'}):
+    if (set(downloaders) == {DashSegmentsFD}
+        and not (to_stdout and len(protocols) > 1)
+            and set(protocols) == {'http_dash_segments_generator'}):
         return DashSegmentsFD
     elif len(downloaders) == 1:
         return downloaders[0]
@@ -23,14 +21,12 @@ def get_suitable_downloader(info_dict, params={}, default=NO_DEFAULT, protocol=N
 # Some of these require get_suitable_downloader
 from .common import FileDownloader
 from .dash import DashSegmentsFD
-from .external import FFmpegFD, get_external_downloader
 from .f4m import F4mFD
 from .fc2 import FC2LiveFD
 from .hls import HlsFD
 from .http import HttpFD
 from .ism import IsmFD
 from .mhtml import MhtmlFD
-from .niconico import NiconicoDmcFD, NiconicoLiveFD
 from .rtmp import RtmpFD
 from .rtsp import RtspFD
 from .websocket import WebSocketFragmentFD
@@ -39,9 +35,7 @@ from .youtube_live_chat import YoutubeLiveChatFD
 PROTOCOL_MAP = {
     'rtmp': RtmpFD,
     'rtmpe': RtmpFD,
-    'rtmp_ffmpeg': FFmpegFD,
     'm3u8_native': HlsFD,
-    'm3u8': FFmpegFD,
     'mms': RtspFD,
     'rtsp': RtspFD,
     'f4m': F4mFD,
@@ -49,8 +43,6 @@ PROTOCOL_MAP = {
     'http_dash_segments_generator': DashSegmentsFD,
     'ism': IsmFD,
     'mhtml': MhtmlFD,
-    'niconico_dmc': NiconicoDmcFD,
-    'niconico_live': NiconicoLiveFD,
     'fc2_live': FC2LiveFD,
     'websocket_frag': WebSocketFragmentFD,
     'youtube_live_chat': YoutubeLiveChatFD,
@@ -87,8 +79,8 @@ def _get_suitable_downloader(info_dict, protocol, params, default):
     if default is NO_DEFAULT:
         default = HttpFD
 
-    if (info_dict.get('section_start') or info_dict.get('section_end')) and FFmpegFD.can_download(info_dict):
-        return FFmpegFD
+    # if (info_dict.get('section_start') or info_dict.get('section_end')) and FFmpegFD.can_download(info_dict):
+    #     return FFmpegFD
 
     info_dict['protocol'] = protocol
     downloaders = params.get('external_downloader')
@@ -96,30 +88,30 @@ def _get_suitable_downloader(info_dict, protocol, params, default):
         downloaders if isinstance(downloaders, str) or downloaders is None
         else downloaders.get(shorten_protocol_name(protocol, True), downloaders.get('default')))
 
-    if external_downloader is None:
-        if info_dict['to_stdout'] and FFmpegFD.can_merge_formats(info_dict, params):
-            return FFmpegFD
-    elif external_downloader.lower() != 'native':
-        ed = get_external_downloader(external_downloader)
-        if ed.can_download(info_dict, external_downloader):
-            return ed
+    # if external_downloader is None:
+    # if info_dict['to_stdout'] and FFmpegFD.can_merge_formats(info_dict, params):
+    #     return FFmpegFD
+    # if external_downloader.lower() != 'native':
+    #     ed = get_external_downloader(external_downloader)
+    #     if ed.can_download(info_dict, external_downloader):
+    #         return ed
 
-    if protocol == 'http_dash_segments':
-        if info_dict.get('is_live') and (external_downloader or '').lower() != 'native':
-            return FFmpegFD
+    # if protocol == 'http_dash_segments':
+    #     if info_dict.get('is_live') and (external_downloader or '').lower() != 'native':
+    #         return FFmpegFD
 
     if protocol in ('m3u8', 'm3u8_native'):
-        if info_dict.get('is_live'):
-            return FFmpegFD
-        elif (external_downloader or '').lower() == 'native':
+        # if info_dict.get('is_live'):
+        #     return FFmpegFD
+        if (external_downloader or '').lower() == 'native':
             return HlsFD
         elif protocol == 'm3u8_native' and get_suitable_downloader(
                 info_dict, params, None, protocol='m3u8_frag_urls', to_stdout=info_dict['to_stdout']):
             return HlsFD
         elif params.get('hls_prefer_native') is True:
             return HlsFD
-        elif params.get('hls_prefer_native') is False:
-            return FFmpegFD
+        # elif params.get('hls_prefer_native') is False:
+        #     return FFmpegFD
 
     return PROTOCOL_MAP.get(protocol, default)
 

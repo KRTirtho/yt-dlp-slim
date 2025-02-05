@@ -10,7 +10,6 @@ import sys
 
 from .compat import compat_expanduser
 from .cookies import SUPPORTED_BROWSERS, SUPPORTED_KEYRINGS
-from .downloader.external import list_external_downloaders
 from .postprocessor import (
     FFmpegExtractAudioPP,
     FFmpegMergerPP,
@@ -1063,7 +1062,7 @@ def create_parser():
         }, help=(
             'Name or path of the external downloader to use (optionally) prefixed by '
             'the protocols (http, ftp, m3u8, dash, rstp, rtmp, mms) to use it for. '
-            f'Currently supports native, {", ".join(sorted(list_external_downloaders()))}. '
+            'Currently supports no external downloader. '
             'You can use this option multiple times to set different downloaders for different protocols. '
             'E.g. --downloader aria2c --downloader "dash,m3u8:native" will use '
             'aria2c for http/ftp downloads, and the native downloader for dash/m3u8 downloads '
@@ -1073,7 +1072,7 @@ def create_parser():
         metavar='NAME:ARGS', dest='external_downloader_args', default={}, type='str',
         action='callback', callback=_dict_from_options_callback,
         callback_kwargs={
-            'allowed_keys': r'ffmpeg_[io]\d*|{}'.format('|'.join(map(re.escape, list_external_downloaders()))),
+            'allowed_keys': r'ffmpeg_[io]\d*|{}'.format('|'.join(map(re.escape, []))),
             'default_key': 'default',
             'process': shlex.split,
         }, help=(

@@ -1,11 +1,8 @@
-import asyncio
 import contextlib
 import os
 import signal
-import threading
 
 from .common import FileDownloader
-from .external import FFmpegFD
 from ..dependencies import websockets
 
 
@@ -27,16 +24,7 @@ class FFmpegSinkFD(FileDownloader):
                     stdin.close()
                 os.kill(os.getpid(), signal.SIGINT)
 
-        class FFmpegStdinFD(FFmpegFD):
-            @classmethod
-            def get_basename(cls):
-                return FFmpegFD.get_basename()
-
-            def on_process_started(self, proc, stdin):
-                thread = threading.Thread(target=asyncio.run, daemon=True, args=(call_conn(proc, stdin), ))
-                thread.start()
-
-        return FFmpegStdinFD(self.ydl, self.params or {}).download(filename, info_copy)
+        return
 
     async def real_connection(self, sink, info_dict):
         """ Override this in subclasses """

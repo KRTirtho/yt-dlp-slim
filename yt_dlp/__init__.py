@@ -15,7 +15,6 @@ import re
 import traceback
 
 from .cookies import SUPPORTED_BROWSERS, SUPPORTED_KEYRINGS, CookieLoadError
-from .downloader.external import get_external_downloader
 from .extractor import list_extractor_classes
 from .extractor.adobepass import MSO_INFO
 from .networking.impersonate import ImpersonateTarget
@@ -469,12 +468,9 @@ def validate_options(opts):
     for proto, path in opts.external_downloader.items():
         if path == 'native':
             continue
-        ed = get_external_downloader(path)
-        if ed is None:
-            raise ValueError(
-                f'No such {format_field(proto, None, "%s ", ignore="default")}external downloader "{path}"')
-        elif ed and proto == 'default':
-            default_downloader = ed.get_basename()
+
+        raise ValueError(
+            f'No such {format_field(proto, None, "%s ", ignore="default")}external downloader "{path}"')
 
     for policy in opts.color.values():
         if policy not in ('always', 'auto', 'auto-tty', 'no_color', 'no_color-tty', 'never'):

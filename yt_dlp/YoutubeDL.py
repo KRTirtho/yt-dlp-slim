@@ -28,7 +28,7 @@ from .cache import Cache
 from .compat import urllib  # isort: split
 from .compat import urllib_req_to_req
 from .cookies import CookieLoadError, LenientSimpleCookie, load_cookies
-from .downloader import FFmpegFD, get_suitable_downloader, shorten_protocol_name
+from .downloader import get_suitable_downloader, shorten_protocol_name
 from .downloader.rtmp import rtmpdump_version
 from .extractor import gen_extractor_classes, get_info_extractor
 from .extractor.common import UnsupportedURLIE
@@ -3386,9 +3386,9 @@ class YoutubeDL:
                 fd, success = None, True
                 if info_dict.get('protocol') or info_dict.get('url'):
                     fd = get_suitable_downloader(info_dict, self.params, to_stdout=temp_filename == '-')
-                    if fd != FFmpegFD and 'no-direct-merge' not in self.params['compat_opts'] and (
+                    if 'no-direct-merge' not in self.params['compat_opts'] and (
                             info_dict.get('section_start') or info_dict.get('section_end')):
-                        msg = ('This format cannot be partially downloaded' if FFmpegFD.available()
+                        msg = ('This format cannot be partially downloaded' if False
                                else 'You have requested downloading the video partially, but ffmpeg is not installed')
                         self.report_error(f'{msg}. Aborting')
                         return
@@ -3430,7 +3430,7 @@ class YoutubeDL:
                     if dl_filename is not None:
                         self.report_file_already_downloaded(dl_filename)
                     elif fd:
-                        for f in info_dict['requested_formats'] if fd != FFmpegFD else []:
+                        for f in info_dict['requested_formats'] if True else []:
                             f['filepath'] = fname = prepend_extension(
                                 correct_ext(temp_filename, info_dict['ext']),
                                 'f{}'.format(f['format_id']), info_dict['ext'])
@@ -3452,7 +3452,7 @@ class YoutubeDL:
                             self.report_warning(f'{msg}. The formats won\'t be merged')
 
                         if temp_filename == '-':
-                            reason = ('using a downloader other than ffmpeg' if FFmpegFD.can_merge_formats(info_dict, self.params)
+                            reason = ('using a downloader other than ffmpeg' if False
                                       else 'but the formats are incompatible for simultaneous download' if merger.available
                                       else 'but ffmpeg is not installed')
                             self.report_warning(
@@ -3550,7 +3550,7 @@ class YoutubeDL:
                     ) for pp in self._pps['post_process'])
 
                     if not postprocessed_by_ffmpeg:
-                        ffmpeg_fixup(fd != FFmpegFD and ext == 'm4a'
+                        ffmpeg_fixup(ext == 'm4a'
                                      and info_dict.get('container') == 'm4a_dash',
                                      'writing DASH m4a. Only some players support this container',
                                      FFmpegFixupM4aPP)
